@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
 import glob
-from sklearn.preprocessing import StandardScaler
-
-# === STEP 1: 讀取多個 Merged CSV 檔案 ===
-merged_files = glob.glob("Merged*.csv")  # 讀取當前資料夾內所有 Merged 開頭的檔案
+import os
+from sklearn.preprocessing import StandardScaler,LabelEncoder
+data_dir = "Data"  # 資料夾名稱
+merged_files = glob.glob(os.path.join(data_dir, "Splited_Merged0*.csv"))
+# === STEP 1: 讀取多個 Merged CSV 檔案 === 
 print(f"找到 {len(merged_files)} 個檔案：", merged_files)
 
 # 儲存所有處理過的資料
@@ -22,8 +23,12 @@ for file in merged_files:
         df.dropna(inplace=True)
 
         # 將 Label 轉成 0/1（二分類：Benign vs Attack）
-        df['Label'] = df['Label'].apply(lambda x: 0 if x == 'Benign' else 1)
+        le = LabelEncoder()
+        df['Label'] = le.fit_transform(df['Label'])
 
+        # 儲存 label 編碼對照表
+        label_map = dict(zip(le.classes_, le.transform(le.classes_)))
+        pd.Series(label_map).to_csv("label_map.csv")
         # 特徵與標籤分離
         X = df.drop('Label', axis=1)
         y = df['Label']
