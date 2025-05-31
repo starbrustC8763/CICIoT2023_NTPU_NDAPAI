@@ -1,1 +1,2 @@
 # CICIoT2023_NTPU_NDAPAI
+預處理過的csv太大了傳不上去，得先執行Preprocess.py把processed_dataset.csv生出來
