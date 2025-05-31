@@ -35,6 +35,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 clf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
 clf.fit(X_train, y_train)
 
+# === STEP 7: 儲存模型（可選） ===
+joblib.dump(clf, "rf_model.pkl")
+joblib.dump(le, "label_encoder.pkl")
+print("✅ 模型與標籤編碼器已儲存。")
+
 # === STEP 6: 預測與評估 ===
 y_pred = clf.predict(X_test)
 
@@ -44,7 +49,4 @@ print(confusion_matrix(y_test, y_pred))
 print("\n=== 分類報告 ===")
 print(classification_report(y_test, y_pred, target_names=le.classes_))
 
-# === STEP 7: 儲存模型（可選） ===
-joblib.dump(clf, "rf_model.pkl")
-joblib.dump(le, "label_encoder.pkl")
-print("✅ 模型與標籤編碼器已儲存。")
+
