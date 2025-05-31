@@ -4,7 +4,7 @@ import numpy as np
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
@@ -73,13 +73,19 @@ y_pred = model.predict(X_test)
 y_pred_classes = np.argmax(y_pred, axis=1)
 y_true_classes = np.argmax(y_test, axis=1)
 
-# 類別名稱處理
-target_names = [str(label) for label in le.classes_]
 
 # 儲存模型
-model.save("dnn_model.h5")
-print("📦 模型已儲存為 dnn_model.h5")
+#model.save("dnn_model.h5")
+#print("📦 模型已儲存為 dnn_model.h5")
 
+
+# 類別名稱處理
+target_names = [str(label) for label in le.classes_]
 print("\n📊 分類報告：")
-print(classification_report(y_true_classes, y_pred_classes, target_names=le.classes_))
+print(classification_report(
+    y_true_classes, y_pred_classes,
+    target_names=target_names,
+    zero_division=0  # 避免因類別未預測出現錯誤
+))
 
+print(confusion_matrix(y_true_classes, y_pred_classes))
