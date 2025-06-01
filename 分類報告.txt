@@ -1,0 +1,26 @@
+📊 分類報告：
+                         precision    recall  f1-score   support
+
+       BACKDOOR_MALWARE       0.82      0.90      0.86     15718
+                 BENIGN       0.99      0.99      0.99      4098
+       BROWSERHIJACKING       1.00      1.00      1.00     50000
+       COMMANDINJECTION       0.98      0.99      0.98      6513
+ DDOS-ACK_FRAGMENTATION       1.00      1.00      1.00     58876
+        DDOS-HTTP_FLOOD       1.00      1.00      1.00     58130
+        DDOS-ICMP_FLOOD       0.53      0.35      0.43     51854
+DDOS-ICMP_FRAGMENTATION       0.76      0.06      0.11     58818
+      DDOS-PSHACK_FLOOD       0.78      0.53      0.63     65007
+       DDOS-RSTFINFLOOD       0.81      0.65      0.72     78290
+         DDOS-SLOWLORIS       0.97      0.99      0.98      4210
+DDOS-SYNONYMOUSIP_FLOOD       0.27      0.93      0.41     29045
+         DDOS-SYN_FLOOD       0.48      0.74      0.59     38217
+         DDOS-TCP_FLOOD       0.57      0.75      0.64     47651
+         DDOS-UDP_FLOOD       0.97      0.99      0.98     14082
+ DDOS-UDP_FRAGMENTATION       0.98      0.96      0.97     10799
+   DICTIONARYBRUTEFORCE       0.99      1.00      1.00     12911
+           DNS_SPOOFING       0.89      0.63      0.74      4492
+         DOS-HTTP_FLOOD       0.69      0.66      0.67      5361
+
+               accuracy                           0.71    614072
+              macro avg       0.81      0.80      0.77    614072
+           weighted avg       0.78      0.71      0.70    614072

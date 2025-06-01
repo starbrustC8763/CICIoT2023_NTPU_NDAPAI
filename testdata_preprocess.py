@@ -53,13 +53,13 @@ for file in merged_files:
 final_df = pd.concat(processed_data, ignore_index=True)
 print(f"合併後資料筆數：{len(final_df)}")
 
-# === 🔎 篩選類別：刪除樣本數不足 10000，過多則下採樣到 50000 ===
+# === 🔎 篩選類別：刪除樣本數不足 3000，過多則下採樣到 50000 ===
 label_counts = final_df['Label'].value_counts()
 print("\n📊 原始類別分布：")
 print(label_counts.sort_index())
 
-# 只保留樣本數 ≥ 10000 的類別
-valid_labels = label_counts[label_counts >= 10000].index
+# 只保留樣本數 ≥ 3000 的類別
+valid_labels = label_counts[label_counts >= 3000].index
 filtered_df = final_df[final_df['Label'].isin(valid_labels)].copy()
 
 # 對樣本數 > 100000 的類別下採樣到 50000
