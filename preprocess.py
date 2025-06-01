@@ -5,7 +5,7 @@ import os
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # === 資料來源設定 ===
-data_dir = "TestData"
+data_dir = "Data"
 merged_files = glob.glob(os.path.join(data_dir, "Splited_Merged0*.csv"))
 print(f"找到 {len(merged_files)} 個檔案：", merged_files)
 
@@ -72,5 +72,5 @@ print("\n📊 處理後類別分布：")
 print(downsampled_df['Label'].value_counts().sort_index())
 
 # === 輸出結果 ===
-downsampled_df.to_csv("processed_dataset_test.csv", index=False)
+downsampled_df.to_csv("processed_dataset.csv", index=False)
 print("✅ 已儲存處理結果至 processed_dataset.csv")

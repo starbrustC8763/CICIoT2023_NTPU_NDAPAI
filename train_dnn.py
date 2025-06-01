@@ -1,7 +1,9 @@
-# train_dnn.py
+# train_dnn_clean.py
 import pandas as pd
 import numpy as np
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import classification_report, confusion_matrix
@@ -10,38 +12,40 @@ from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import EarlyStopping
 
-print("📥 讀取資料中...")
-df = pd.read_csv("processed_dataset.csv")
-print(f"✅ 資料載入完成，共 {df.shape[0]} 筆資料，{df.shape[1]} 欄位")
+# === 參數 ===
+INPUT_FILE = "processed_dataset.csv"
+MODEL_FILE = "dnn_model_clean.h5"
+ENCODER_FILE = "label_encoder.pkl"
+SCALER_FILE = "scaler.pkl"
+CONFUSION_IMG = "confusion_matrix_clean.png"
 
-# 分離特徵與標籤
-X = df.drop('Label', axis=1)
-y_raw = df['Label']
+# === 讀取資料 ===
+print(f"📥 載入資料：{INPUT_FILE}")
+df = pd.read_csv(INPUT_FILE)
 
-le = joblib.load("label_encoder.pkl")
-y = df['Label'].values.astype(int)  # 不再轉換，只強制為 int
-num_classes = len(le.classes_)
+# === 特徵與標籤分離 ===
+X = df.drop("Label", axis=1)
+y_raw = df["Label"]
 
-# 儲存 label 對照表
-label_map = dict(zip(le.classes_, le.transform(le.classes_)))
-pd.Series(label_map).to_csv("label_map.csv")
-joblib.dump(le, "label_encoder.pkl")
-print("🗂️ 已儲存 Label 對照表與編碼器")
+# === LabelEncoder（還原類別名用） ===
+le = LabelEncoder()
+y = le.fit_transform(y_raw)
+joblib.dump(le, ENCODER_FILE)
 
-# 特徵標準化
+# === 標準化特徵（此時為保險起見再次做標準化）===
 scaler = StandardScaler()
-X = scaler.fit_transform(X)
-joblib.dump(scaler, "scaler.pkl")
-print("⚖️ 特徵已標準化並儲存")
+X_scaled = scaler.fit_transform(X)
+joblib.dump(scaler, SCALER_FILE)
 
-# One-hot 編碼目標
+# === One-hot 編碼標籤 ===
+num_classes = len(le.classes_)
 y_cat = to_categorical(y, num_classes)
 
-# 切分資料
+# === 分割訓練/測試集 ===
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y_cat, test_size=0.3, stratify=y, random_state=42)
+    X_scaled, y_cat, test_size=0.3, stratify=y, random_state=42)
 
-# 建立 DNN 模型
+# === 建立 DNN 模型 ===
 model = Sequential([
     Dense(256, input_dim=X.shape[1], activation='relu'),
     Dropout(0.3),
@@ -49,14 +53,11 @@ model = Sequential([
     Dropout(0.2),
     Dense(num_classes, activation='softmax')
 ])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-model.compile(optimizer='adam',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
-
+# === 訓練模型 ===
 early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-
-print("🚀 開始訓練 DNN 模型（使用 GPU）...")
+print("🚀 開始訓練模型...")
 model.fit(X_train, y_train,
           epochs=20,
           batch_size=1024,
@@ -64,28 +65,31 @@ model.fit(X_train, y_train,
           callbacks=[early_stop],
           verbose=2)
 
-# 評估
+# === 模型評估 ===
 loss, acc = model.evaluate(X_test, y_test, verbose=0)
 print(f"\n✅ 測試準確率: {acc:.4f}")
 
-# 預測與報告
-y_pred = model.predict(X_test)
-y_pred_classes = np.argmax(y_pred, axis=1)
-y_true_classes = np.argmax(y_test, axis=1)
+# === 預測與分類報告 ===
+y_pred_prob = model.predict(X_test)
+y_pred = np.argmax(y_pred_prob, axis=1)
+y_true = np.argmax(y_test, axis=1)
 
-
-# 儲存模型
-#model.save("dnn_model.h5")
-#print("📦 模型已儲存為 dnn_model.h5")
-
-
-# 類別名稱處理
-target_names = [str(label) for label in le.classes_]
+target_names = [str(cls) for cls in le.classes_]
 print("\n📊 分類報告：")
-print(classification_report(
-    y_true_classes, y_pred_classes,
-    target_names=target_names,
-    zero_division=0  # 避免因類別未預測出現錯誤
-))
+print(classification_report(y_true, y_pred, target_names=target_names, zero_division=0))
 
-print(confusion_matrix(y_true_classes, y_pred_classes))
+# === 混淆矩陣可視化 ===
+cm = confusion_matrix(y_true, y_pred)
+plt.figure(figsize=(18, 14))
+sns.heatmap(cm, annot=False, cmap='Blues', xticklabels=target_names, yticklabels=target_names)
+plt.title("Confusion Matrix (Cleaned Data)")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.savefig(CONFUSION_IMG)
+print(f"🖼️ 混淆矩陣儲存為 {CONFUSION_IMG}")
+
+# === 儲存模型 ===
+model.save(MODEL_FILE)
+print(f"✅ 模型已儲存為 {MODEL_FILE}")
