@@ -53,24 +53,26 @@ for file in merged_files:
 final_df = pd.concat(processed_data, ignore_index=True)
 print(f"合併後資料筆數：{len(final_df)}")
 
-# === 🔎 篩選類別：刪除樣本數不足 3000，過多則下採樣到 50000 ===
-label_counts = final_df['Label'].value_counts()
-print("\n📊 原始類別分布：")
-print(label_counts.sort_index())
+# # === 🔎 篩選類別：刪除樣本數不足 3000，過多則下採樣到 50000 ===
+# label_counts = final_df['Label'].value_counts()
+# print("\n📊 原始類別分布：")
+# print(label_counts.sort_index())
 
-# 只保留樣本數 ≥ 3000 的類別
-valid_labels = label_counts[label_counts >= 3000].index
-filtered_df = final_df[final_df['Label'].isin(valid_labels)].copy()
+# # 只保留樣本數 ≥ 3000 的類別
+# valid_labels = label_counts[label_counts >= 3000].index
+# filtered_df = final_df[final_df['Label'].isin(valid_labels)].copy()
 
 # 對樣本數 > 100000 的類別下採樣到 50000
-downsampled_df = filtered_df.groupby('Label').apply(
-    lambda x: x.sample(n=50000, random_state=42) if len(x) > 100000 else x
-).reset_index(drop=True)
+# downsampled_df = (
+#     final_df.groupby("Label")
+#     .apply(lambda x: x.sample(n=50000, random_state=42) if len(x) > 50000 else x)
+#     .reset_index(drop=True)
+# )
 
 # 顯示處理後的類別分布
 print("\n📊 處理後類別分布：")
-print(downsampled_df['Label'].value_counts().sort_index())
+print(final_df["Label"].value_counts().sort_index())
 
 # === 輸出結果 ===
-downsampled_df.to_csv("processed_dataset_test.csv", index=False)
-print("✅ 已儲存處理結果至 processed_dataset.csv")
+final_df.to_csv("processed_dataset_test.csv", index=False)
+print("✅ 已儲存處理結果至 processed_dataset_test.csv")
