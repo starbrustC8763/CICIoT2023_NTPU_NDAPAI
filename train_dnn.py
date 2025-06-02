@@ -46,20 +46,26 @@ X_train, X_test, y_train, y_test = train_test_split(
     X_scaled, y_cat, test_size=0.3, stratify=y, random_state=42)
 
 # === 建立 DNN 模型 ===
-model = Sequential([
-    Dense(256, input_dim=X.shape[1], activation='relu'),
-    Dropout(0.3),
-    Dense(128, activation='relu'),
-    Dropout(0.2),
-    Dense(num_classes, activation='softmax')
-])
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model = Sequential(
+    [
+        Dense(256, input_dim=X.shape[1], activation="relu"),
+        Dropout(0.3),
+        Dense(128, activation="relu"),
+        Dropout(0.2),
+        Dense(num_classes, activation="softmax"),
+    ]
+)
+model.compile(
+    optimizer='adam', 
+    loss='categorical_crossentropy', 
+    metrics=['accuracy']
+)
 
 # === 訓練模型 ===
 early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 print("🚀 開始訓練模型...")
 history = model.fit(X_train, y_train,
-          epochs=20,
+          epochs=40,
           batch_size=1024,
           validation_split=0.1,
           callbacks=[early_stop],
