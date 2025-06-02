@@ -51,7 +51,7 @@ model = Sequential(
         Dense(256, input_dim=X.shape[1], activation="relu"),
         Dropout(0.3),
         Dense(128, activation="relu"),
-        Dropout(0.2),
+        #Dropout(0.2),
         Dense(num_classes, activation="softmax"),
     ]
 )

@@ -54,14 +54,19 @@ target_names = [id_to_label[i] for i in sorted(set(y_true) | set(y_pred))]
 print("\n📊 分類報告：")
 print(classification_report(y_true, y_pred, target_names=target_names, zero_division=0))
 
+
+
 # === 混淆矩陣圖 ===
 cm = confusion_matrix(y_true, y_pred)
+# 將混淆矩陣轉換為「每列比例」（列是實際類別）
+cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 plt.figure(figsize=(18, 14))
-sns.heatmap(cm, annot=False, cmap='Blues', xticklabels=target_names, yticklabels=target_names)
-plt.title("Confusion Matrix (Test Set)")
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
+sns.heatmap(cm_normalized, annot=False, fmt=".2f", cmap='Blues',
+            xticklabels=target_names, yticklabels=target_names)
+plt.title("Normalized Confusion Matrix (Row-wise, per actual class)")
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
-plt.savefig(CONFUSION_IMG)
-print(f"🖼️ 混淆矩陣已儲存為 {CONFUSION_IMG}")
+plt.savefig("confusion_matrix_test_clean_normalized.png")
+print("📊 已儲存標準化混淆矩陣：confusion_matrix_test_clean_normalized.png")
