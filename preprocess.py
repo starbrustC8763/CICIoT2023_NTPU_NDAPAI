@@ -62,9 +62,9 @@ print(label_counts.sort_index())
 valid_labels = label_counts[label_counts >= 10000].index
 filtered_df = final_df[final_df['Label'].isin(valid_labels)].copy()
 
-# 對樣本數 > 100000 的類別下採樣到 50000
+# 對樣本數 > 80000 的類別下採樣到 50000
 downsampled_df = filtered_df.groupby('Label').apply(
-    lambda x: x.sample(n=50000, random_state=42) if len(x) > 100000 else x
+    lambda x: x.sample(n=50000, random_state=42) if len(x) > 80000 else x
 ).reset_index(drop=True)
 
 # 顯示處理後的類別分布

@@ -58,7 +58,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 # === 訓練模型 ===
 early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 print("🚀 開始訓練模型...")
-model.fit(X_train, y_train,
+history = model.fit(X_train, y_train,
           epochs=20,
           batch_size=1024,
           validation_split=0.1,
@@ -89,6 +89,18 @@ plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
 plt.savefig(CONFUSION_IMG)
 print(f"🖼️ 混淆矩陣儲存為 {CONFUSION_IMG}")
+
+plt.figure(figsize=(8, 6))
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.title("Training vs Validation Loss")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("loss_curve.png")
+print("📈 已儲存 loss 曲線圖為 loss_curve.png")
 
 # === 儲存模型 ===
 model.save(MODEL_FILE)
